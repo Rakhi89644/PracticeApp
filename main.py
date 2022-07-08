@@ -3,7 +3,7 @@ from curses.ascii import US
 from doctest import Example
 from itertools import product
 from urllib import request
-from fastapi import FastAPI,HTTPException,Request
+from fastapi import FastAPI,HTTPException, Header,Request,status,Form
 #from uuid import UUID
 from typing import Counter, List,Optional
 from h11 import PRODUCT_ID
@@ -54,6 +54,16 @@ async def negative_number_exception_handler(request:Request,exception:NegativeNu
 
     )
 
+@app.post("/product_detail/login")
+async def product_login(username: str = Form(...),password: str =Form(...)):
+    return {"username":username,"password":password}
+
+# add header as url
+
+@app.get("/header")
+async def read_header(random_header: Optional[str] = Header(None)):
+    return {"random_header":random_header}
+
 @app.get("/product/{id}")
 async def read_product():
     for x in Products:
@@ -87,7 +97,7 @@ async def read_all_user(product_to_return:Optional[int]=None):
 
             
 
-@app.post('/')
+@app.post('/',status_code=status.HTTP_201_CREATED)
 async def create_user(user:User):
     Products.append(user)
     return Products
